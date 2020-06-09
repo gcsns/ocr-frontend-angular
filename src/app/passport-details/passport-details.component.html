@@ -1,0 +1,6 @@
+<nz-descriptions nzTitle="Passport info">
+  {{passportData.format}}
+  <ng-container *ngFor="let detail of passportData.details">
+    <nz-descriptions-item [nzTitle]="detail.label">{{detail.value}}</nz-descriptions-item>
+  </ng-container>
+</nz-descriptions>

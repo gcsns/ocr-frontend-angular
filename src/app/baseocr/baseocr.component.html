@@ -1,0 +1,47 @@
+<!-- <input
+  type="file"
+  name="image"
+  (change)="uploadSingle($event)"
+  id="btnUpload"
+/> -->
+
+
+<div style="text-align:center">
+  <div>
+    <webcam [height]="500" [width]="500" [trigger]="triggerObservable" (imageCapture)="handleImage($event)" *ngIf="showWebcam"
+            [allowCameraSwitch]="allowCameraSwitch" [switchCamera]="nextWebcamObservable"
+            [videoOptions]="videoOptions"
+            [imageQuality]="1"
+            (cameraSwitched)="cameraWasSwitched($event)"
+            (initError)="handleInitError($event)"
+    ></webcam>
+    <br/>
+    <button class="actionBtn" (click)="triggerSnapshot();">Detect MRZ</button>
+    <button class="actionBtn" (click)="toggleWebcam();">Toggle Webcam</button>
+    <br/>
+    <!-- <button class="actionBtn" (click)="showNextWebcam(true);" [disabled]="!multipleWebcamsAvailable">Next Webcam</button> -->
+    <!-- <input id="cameraSwitchCheckbox" type="checkbox" [(ngModel)]="allowCameraSwitch"><label for="cameraSwitchCheckbox">Allow Camera Switch</label> -->
+    <br/>
+    <!-- DeviceId: <input id="deviceId" type="text" [(ngModel)]="deviceId" style="width: 500px"> -->
+    <!-- <button (click)="showNextWebcam(deviceId);">Activate</button> -->
+  </div>
+</div>
+<!--
+<div class="snapshot" *ngIf="webcamImage" style="max-height: 10vh; max-width: 20vh;">
+  <img [src]="webcamImage.imageAsDataUrl"/>
+</div> -->
+
+
+
+
+<div class="snapshot" *ngIf="webcamImage">
+  <ng-container *ngFor="let image of arrayOfImages">
+    <img [src]="image" class="snapimg"/>
+  </ng-container>
+</div>
+
+
+<h4 *ngIf="errors.length > 0">Messages:</h4>
+<ul *ngFor="let error of errors">
+  <li>{{error | json}}</li>
+</ul>
