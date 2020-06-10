@@ -82,7 +82,7 @@ export class BaseocrComponent {
   totalCount = 10;
 
   successCounter = 0
-  totalSuccessCountReq = 2
+  totalSuccessCountReq = 4
   public handleImage(webcamImage: WebcamImage): void {
     if (this.counter > this.totalCount && this.validRecords.length === 0) {
       console.log(this.validRecords);

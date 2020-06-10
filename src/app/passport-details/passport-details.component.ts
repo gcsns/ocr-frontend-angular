@@ -23,7 +23,7 @@ export class PassportDetailsComponent implements OnInit {
     this.bagOfValues = {};
     this.passports = this.ocrService.getPassportData();
 
-    this.filterValidPassports();
+    // this.filterValidPassports();
     this.passportData = this.passports[0];
 
     // name validation
@@ -52,7 +52,7 @@ export class PassportDetailsComponent implements OnInit {
           this.dict[key] = { ...this.dict[key], [value]: 1 }
         }
         else if(this.dict[key][value]) {
-          this.dict[key][value] = this.dict[key][value]++;
+          this.dict[key][value] = this.dict[key][value]+1;
         }
       })
     });

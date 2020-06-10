@@ -20,6 +20,7 @@
     "@angular/platform-browser-dynamic": "~9.1.9",
     "@angular/router": "~9.1.9",
     "ng-zorro-antd": "^9.1.2",
+    "ngx-json-viewer": "^1.0.0",
     "ngx-webcam": "^0.3.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
