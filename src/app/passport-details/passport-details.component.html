@@ -1,6 +1,9 @@
 <nz-descriptions nzTitle="Passport info">
   {{passportData.format}}
   <ng-container *ngFor="let detail of passportData.details">
-    <nz-descriptions-item [nzTitle]="detail.label">{{detail.value}}</nz-descriptions-item>
+    <nz-descriptions-item [nzTitle]="detail.label">
+      <nz-tag nzColor="success" *ngIf="detail.valid">{{detail.value}}</nz-tag>
+      <nz-tag nzColor="warning" *ngIf="!detail.valid">{{detail.value}}</nz-tag>
+    </nz-descriptions-item>
   </ng-container>
 </nz-descriptions>

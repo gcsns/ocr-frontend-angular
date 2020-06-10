@@ -57,17 +57,7 @@ export class BaseocrComponent {
   }
 
   public triggerSnapshot(): void {
-    // let counter = 0;
-    // const frameInterval = setInterval(()=>{
-      this.trigger.next();
-    //   counter++;
-    //   console.log(counter);
-    // }, 1000);
-
-
-    // setTimeout(()=>{
-    //   clearInterval(frameInterval);
-    // }, 4000);
+    this.trigger.next();
   }
 
   public toggleWebcam(): void {
@@ -86,10 +76,16 @@ export class BaseocrComponent {
   }
 
 
-  arrayOfImages:any[] = [];
+  arrayOfImages: any[] = [];
   counter = 0;
+  validRecords = [];
+  totalCount = 10;
+
+  successCounter = 0
+  totalSuccessCountReq = 2
   public handleImage(webcamImage: WebcamImage): void {
-    if(++this.counter > 5) {
+    if (this.counter > this.totalCount && this.validRecords.length === 0) {
+      console.log(this.validRecords);
       this.msg.error("Timed out!, Please try again");
       this.counter = 0;
       return;
@@ -100,14 +96,19 @@ export class BaseocrComponent {
     this.arrayOfImages.push(this.webcamImage.imageAsDataUrl);
 
     const imageblob = this.b64toBlob(this.webcamImage.imageAsDataUrl);
-    this.ocrService.uploadBlob(imageblob).subscribe(data=>{
-      this.ocrService.setPassportData(data);
-      this.router.navigate(['passportinfo']);
-    }, error=>{
-      setTimeout(()=>{
-        this.trigger.next();
-      }, 500)
-      console.log(error);
+    this.ocrService.uploadBlob(imageblob).subscribe(data => {
+      this.counter++;
+      this.successCounter++;
+      if (this.successCounter > this.totalSuccessCountReq) {
+        this.ocrService.setPassportData(this.validRecords);
+        this.router.navigate(['passportinfo']);
+      }
+      this.validRecords.push(data);
+      this.trigger.next();
+    }, error => {
+      this.msg.warning("Please hold your card firmly!");
+      this.counter++;
+      this.trigger.next();
     })
   }
 
