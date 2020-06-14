@@ -82,24 +82,38 @@ export class BaseocrComponent {
   totalCount = 10;
 
   successCounter = 0
-  totalSuccessCountReq = 4
+  totalSuccessCountReq = 1;
+  postTimeout = false;
   public handleImage(webcamImage: WebcamImage): void {
-    if (this.counter > this.totalCount && this.validRecords.length === 0) {
-      console.log(this.validRecords);
-      this.msg.error("Timed out!, Please try again");
-      this.counter = 0;
-      return;
-    }
-    console.info('received webcam image', webcamImage);
     this.webcamImage = webcamImage;
+    if(!this.postTimeout) {
+      this.handlePreTimeout();
+    }else{
+      this.handlePostTimeout();
+    }
 
+  }
+
+
+
+  handlePreTimeout() {
     this.arrayOfImages.push(this.webcamImage.imageAsDataUrl);
+
+    if (this.counter >= this.totalCount && this.validRecords.length === 0) {
+      console.log(this.validRecords);
+      this.msg.error("Timed out!, moving to post timeout");
+      this.counter = 0;
+      this.successCounter = 0;
+      this.arrayOfImages = []
+      this.postTimeout = true;
+      return this.trigger.next();
+    }
 
     const imageblob = this.b64toBlob(this.webcamImage.imageAsDataUrl);
     this.ocrService.uploadBlob(imageblob).subscribe(data => {
       this.counter++;
       this.successCounter++;
-      if (this.successCounter > this.totalSuccessCountReq) {
+      if (this.successCounter >= this.totalSuccessCountReq) {
         this.ocrService.setPassportData(this.validRecords);
         this.router.navigate(['passportinfo']);
       }
@@ -112,6 +126,35 @@ export class BaseocrComponent {
     })
   }
 
+
+
+  postTimeoutTrialCount = 0;
+  handlePostTimeout() {
+    this.arrayOfImages.push(this.webcamImage.imageAsDataUrl);
+
+    if (this.counter > this.totalCount && this.validRecords.length === 0) {
+      console.log(this.validRecords);
+      this.msg.error("Post Timeout failed! No results to show");
+      this.counter = 0;
+      return;
+    }
+
+    const imageblob = this.b64toBlob(this.webcamImage.imageAsDataUrl);
+    this.ocrService.uploadBlob(imageblob, true).subscribe(data => {
+      this.counter++;
+      this.successCounter++;
+      if (this.successCounter >= this.totalSuccessCountReq) {
+        this.ocrService.setPassportData(this.validRecords);
+        this.router.navigate(['passportinfo']);
+      }
+      this.validRecords.push(data);
+      this.trigger.next();
+    }, error => {
+      this.msg.warning("Please hold your card firmly!");
+      this.counter++;
+      this.trigger.next();
+    })
+  }
 
   b64toBlob(dataURI) {
     var byteString = atob(dataURI.split(',')[1]);
