@@ -83,7 +83,7 @@ export class BaseocrComponent {
   totalCount = 10;
 
   successCounter = 0
-  totalSuccessCountReq = 1;
+  totalSuccessCountReq = 3;
   postTimeout = false;
   public handleImage(webcamImage: WebcamImage): void {
     this.webcamImage = webcamImage;
@@ -111,9 +111,11 @@ export class BaseocrComponent {
     }
 
     const imageblob = this.b64toBlob(this.webcamImage.imageAsDataUrl);
+    this.shortCircuitCheck(); //check for validity before moving for next set of data
     this.ocrService.uploadBlob(imageblob).subscribe(data => {
       this.counter++;
       this.successCounter++;
+
       if (this.successCounter >= this.totalSuccessCountReq) {
         this.ocrService.setPassportData(this.validRecords);
         this.router.navigate(['passportinfo']);
@@ -128,13 +130,21 @@ export class BaseocrComponent {
   }
 
 
-  checkForValidity() {
-    if(this.validRecords.length>=2) {
-      let description1 = this.validRecords[this.validRecords.length-1];
-      let description2 = this.validRecords[this.validRecords.length -2];
+  // since we are only concerned with these fields to be 100% correct
+  shortCircuitCheck() {
+    let requiredValidators = ["firstName", "lastName", "documentNumber", "sex"];
+    let lovr = this.validRecords.length; //length of valid records
+    let boolResult = true;
+    if(lovr>=2) {
+      for(let validator of requiredValidators) {
+        boolResult = boolResult && (this.validRecords[lovr-1].fields[validator] === this.validRecords[lovr-2].fields[validator])
+      }
 
-      this.ocrService.setPassportData(this.validRecords);
-      this.router.navigate(['passportinfo']);
+      if(boolResult) {
+        console.log("validity check passed");
+        this.ocrService.setPassportData(this.validRecords);
+        this.router.navigate(['passportinfo']);
+      }
     }
   }
 
@@ -151,6 +161,7 @@ export class BaseocrComponent {
       return;
     }
 
+    this.shortCircuitCheck();
     const imageblob = this.b64toBlob(this.webcamImage.imageAsDataUrl);
     this.ocrService.uploadBlob(imageblob, true).subscribe(data => {
       this.counter++;
