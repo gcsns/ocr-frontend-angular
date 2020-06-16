@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class OcrService {
   public uploadSingle(files: FileList) {
     let formData = new FormData();
     formData.append("image", files[0], files[0].name);
-    return this.http.post('http://localhost:9659/upload', formData);
+    return this.http.post(`${environment.apiUrl}/upload`, formData);
   }
 
 
@@ -22,7 +23,7 @@ export class OcrService {
   public uploadBlob(blobObj:Blob, initiatePostTimeout=false) {
     let formData = new FormData();
     formData.append("image", blobObj, "image");
-    return this.http.post(`http://localhost:9659/upload?initiatePostTimeout=${initiatePostTimeout}`, formData);
+    return this.http.post(`${environment.apiUrl}/upload?initiatePostTimeout=${initiatePostTimeout}`, formData);
   }
 
 

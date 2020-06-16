@@ -33,11 +33,12 @@ export class BaseocrComponent {
   // toggle webcam on/off
   public showWebcam = true;
   public allowCameraSwitch = true;
-  public multipleWebcamsAvailable = false;
+  public multipleWebcamsAvailable = true;
+  public imageQuality: ImageSmoothingQuality = "high";
   public deviceId: string;
   public videoOptions: MediaTrackConstraints = {
     // width: {ideal: 1024},
-    // height: {ideal: 576}
+    // height: {ideal: 450},
   };
   public errors: WebcamInitError[] = [];
 
@@ -124,6 +125,17 @@ export class BaseocrComponent {
       this.counter++;
       this.trigger.next();
     })
+  }
+
+
+  checkForValidity() {
+    if(this.validRecords.length>=2) {
+      let description1 = this.validRecords[this.validRecords.length-1];
+      let description2 = this.validRecords[this.validRecords.length -2];
+
+      this.ocrService.setPassportData(this.validRecords);
+      this.router.navigate(['passportinfo']);
+    }
   }
 
 
