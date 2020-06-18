@@ -156,16 +156,17 @@ export class BaseocrComponent implements OnInit, AfterViewInit{
   shortCircuitCheck() {
     let requiredValidators = ["firstName", "lastName", "documentNumber", "sex"];
     let lovr = this.validRecords.length; //length of valid records
-    let framesToCheck=2;
+    let comparisons=2; //continuous frames that will be checked is + 1
     let boolResult = true;
     if(lovr<=2) {
       return;
     }
 
-    for (let k = lovr - 1; k >= lovr - framesToCheck; k--) {
+    for (let k = lovr - 1; k >= lovr - comparisons; k--) {
       for (let validator of requiredValidators) {
         boolResult = boolResult && (this.validRecords[lovr - k].fields[validator] === this.validRecords[lovr - k - 1].fields[validator])
       }
+      console.log(boolResult);
     }
 
     if(boolResult) {
