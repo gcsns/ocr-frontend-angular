@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { OcrService } from '../ocr.service';
 import { WebcamInitError, WebcamImage, WebcamUtil } from 'ngx-webcam';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   templateUrl: './baseocr.component.html',
   styleUrls: ['./baseocr.component.scss']
 })
-export class BaseocrComponent {
+export class BaseocrComponent implements OnInit, AfterViewInit{
 
   constructor(
     private msg: NzMessageService,
@@ -21,6 +21,7 @@ export class BaseocrComponent {
 
   description: string;
   text: string;
+  @ViewChild('ocrscreen') ocrscreen: any;
   uploadSingle(event) {
     this.ocrService.uploadSingle(event.target.files).subscribe((data: any) => {
       this.description = data.textAnnotations.description;
@@ -37,8 +38,9 @@ export class BaseocrComponent {
   public imageQuality: ImageSmoothingQuality = "high";
   public deviceId: string;
   public videoOptions: MediaTrackConstraints = {
-    // width: {ideal: 1024},
-    // height: {ideal: 450},
+    width: {ideal: 800},
+    height: {ideal: 500},
+    // frameRate: {max: 60, min: 30}
   };
   public errors: WebcamInitError[] = [];
 
@@ -55,6 +57,26 @@ export class BaseocrComponent {
       .then((mediaDevices: MediaDeviceInfo[]) => {
         this.multipleWebcamsAvailable = mediaDevices && mediaDevices.length > 1;
       });
+  }
+
+  ngAfterViewInit() {
+    this.checkDimension();
+  }
+
+
+  allowDetection: boolean = true;
+  checkDimension() {
+    window.addEventListener('resize', (resizeEvent: any)=>{
+      if(resizeEvent.currentTarget.innerHeight > resizeEvent.currentTarget.innerWidth) {
+        this.allowDetection = false;
+      }else{
+        this.allowDetection = true;
+      }
+    });
+
+    if(window.innerHeight > window.innerWidth) {
+      this.allowDetection = false;
+    }
   }
 
   public triggerSnapshot(): void {
@@ -80,10 +102,10 @@ export class BaseocrComponent {
   arrayOfImages: any[] = [];
   counter = 0;
   validRecords = [];
-  totalCount = 10;
+  totalCount = 13;
 
   successCounter = 0
-  totalSuccessCountReq = 3;
+  totalSuccessCountReq = 5;
   postTimeout = false;
   public handleImage(webcamImage: WebcamImage): void {
     this.webcamImage = webcamImage;
@@ -134,17 +156,22 @@ export class BaseocrComponent {
   shortCircuitCheck() {
     let requiredValidators = ["firstName", "lastName", "documentNumber", "sex"];
     let lovr = this.validRecords.length; //length of valid records
+    let framesToCheck=2;
     let boolResult = true;
-    if(lovr>=2) {
-      for(let validator of requiredValidators) {
-        boolResult = boolResult && (this.validRecords[lovr-1].fields[validator] === this.validRecords[lovr-2].fields[validator])
-      }
+    if(lovr<=2) {
+      return;
+    }
 
-      if(boolResult) {
-        console.log("validity check passed");
-        this.ocrService.setPassportData(this.validRecords);
-        this.router.navigate(['passportinfo']);
+    for (let k = lovr - 1; k >= lovr - framesToCheck; k--) {
+      for (let validator of requiredValidators) {
+        boolResult = boolResult && (this.validRecords[lovr - k].fields[validator] === this.validRecords[lovr - k - 1].fields[validator])
       }
+    }
+
+    if(boolResult) {
+      console.log("validity check passed");
+      this.ocrService.setPassportData(this.validRecords);
+      this.router.navigate(['passportinfo']);
     }
   }
 

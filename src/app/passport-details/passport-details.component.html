@@ -8,3 +8,15 @@
   </ng-container>
 </nz-descriptions>
 
+
+<br><br>
+
+<nz-descriptions nzTitle="Face Detection">
+  <ng-container *ngFor="let landmark of passportData.faces[0].landmarks">
+    <nz-descriptions-item [nzTitle]="landmark.type">
+      <nz-tag nzColor="success">{{landmark.position.x}}</nz-tag>
+      <nz-tag nzColor="success">{{landmark.position.y}}</nz-tag>
+      <nz-tag nzColor="success">{{landmark.position.z}}</nz-tag>
+    </nz-descriptions-item>
+  </ng-container>
+</nz-descriptions>

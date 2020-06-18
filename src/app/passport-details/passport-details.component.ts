@@ -24,7 +24,7 @@ export class PassportDetailsComponent implements OnInit {
     this.passports = this.ocrService.getPassportData();
 
     // this.filterValidPassports();
-    this.passportData = this.passports[0];
+    this.passportData = this.passports[this.passports.length-1];
 
     // name validation
 
