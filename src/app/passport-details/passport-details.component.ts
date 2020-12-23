@@ -13,51 +13,10 @@ export class PassportDetailsComponent implements OnInit {
     private ocrService: OcrService
   ) { }
 
-  passports: any;
-  passportData: any;
-  unmatched: any;
-  objectkeys = Object.keys;
-  bagOfValues;
-  fieldsCount;
+
+  data;
   ngOnInit(): void {
-    this.bagOfValues = {};
-    this.passports = this.ocrService.getPassportData();
-
-    // this.filterValidPassports();
-    this.passportData = this.passports[this.passports.length-1];
-
-    // name validation
-
-    // checksum validation as a whole
-
-    this.fieldsCount = this.countOfAllFields()
-  }
-
-
-  filterValidPassports() {
-    this.passports = this.passports.filter(passport=>!!passport.valid); // checksum as a whole
-    return this.passports;
-  }
-
-
-  dict;
-  countOfAllFields() {
-    this.dict = {}
-    this.passports.forEach(passport=>{
-      Object.keys(passport.fields).forEach(key=>{
-        const value = passport.fields[key];
-
-        // if the label doesnot exist
-        if(!this.dict[key] || !this.dict[key][value]) {
-          this.dict[key] = { ...this.dict[key], [value]: 1 }
-        }
-        else if(this.dict[key][value]) {
-          this.dict[key][value] = this.dict[key][value]+1;
-        }
-      })
-    });
-
-    console.log(this.dict)
-    return this.dict;
+    this.data = this.ocrService.getPassportData()[3].ListVerifiedFields;
+    console.log(this.data);
   }
 }

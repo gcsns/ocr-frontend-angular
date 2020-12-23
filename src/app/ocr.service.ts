@@ -20,6 +20,31 @@ export class OcrService {
 
 
 
+  public uploadToRegulaService(uri: string) {
+    return this.http.post(`${environment.regulaUrl}/api/process`, {
+      "processParam": {
+          "scenario": "FullProcess",
+          "resultTypeOutput": [
+              1,
+              6,
+              9,
+              15
+          ],
+          "doublePageSpread": true
+      },
+      "List": [
+          {
+              "page_idx": 0,
+              "Format": ".png",
+              "LightIndex": 6,
+              "ImageData": {
+                  "image": uri
+              }
+          }
+      ]
+    })
+  }
+
   public uploadBlob(blobObj:Blob, initiatePostTimeout=false) {
     let formData = new FormData();
     formData.append("image", blobObj, "image");

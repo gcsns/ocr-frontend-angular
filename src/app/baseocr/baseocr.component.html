@@ -1,50 +1,36 @@
-<!-- <input
-  type="file"
-  name="image"
-  (change)="uploadSingle($event)"
-  id="btnUpload"
-/> -->
 
 
-<div style="text-align:center">
-  <nz-alert
-      nzType="error"
-      nzCloseable
-      nzMessage="Warning"
-      nzDescription="Please use landscape mode to scan your passport, Rotate to landscape mode"
-      *ngIf="!allowDetection"
-    >
-    </nz-alert>
-  <div [hidden]="!allowDetection">
-    <webcam [height]="500" [width]="500" [trigger]="triggerObservable" (imageCapture)="handleImage($event)" *ngIf="showWebcam"
-            [allowCameraSwitch]="allowCameraSwitch" [switchCamera]="nextWebcamObservable"
-            [videoOptions]="videoOptions"
-            [imageQuality]="1"
-            (cameraSwitched)="cameraWasSwitched($event)"
-            (initError)="handleInitError($event)"
-            #ocrscreen
-    ></webcam>
-    <br>
-    <button nz-button nzType="default" (click)="toggleWebcam();">Toggle Webcam</button>
-    <button nz-button nzType="primary" (click)="triggerSnapshot();">Scan Passport</button>
+<nz-spin [nzSpinning]="uploading">
+  <div class="image-upload">
+    <img [src]="imageSrc" style="max-width:300px;max-height:300px"/>
+      <input name="imageUrl" type="file" accept="image/*" (change)="handleInputChange($event)" #uploader style="display: none;"/>
+
+      <button nz-button (click)="uploader.click()">
+        Upload Document
+      </button>
+
   </div>
+</nz-spin>
+
+
+<div *ngIf="signature">
+  <nz-divider nzText="Signature"></nz-divider>
+  <img nz-image width="200px" height="200px" [src]="signature" alt=""/>
 </div>
 
-<div class="snapshot" *ngIf="arrayOfImages.length>0" style="max-height: 10vh; max-width: 20vh;">
-  <!-- <img [src]="webcamImage.imageAsDataUrl"/> -->
-  <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
-  <nz-badge [nzCount]="totalCount - arrayOfImages.length"></nz-badge>
+<div *ngIf="profileImage">
+  <nz-divider nzText="Image"></nz-divider>
+  <img nz-image width="200px" height="200px" [src]="profileImage" alt=""/>
 </div>
 
 
-<!-- <div class="snapshot" *ngIf="webcamImage">
-  <ng-container *ngFor="let image of arrayOfImages">
-    <img [src]="image" class="snapimg"/>
-  </ng-container>
-</div> -->
-
-
-<h4 *ngIf="errors.length > 0">Messages:</h4>
-<ul *ngFor="let error of errors">
-  <li>{{error | json}}</li>
-</ul>
+<div>
+  <nz-descriptions nzTitle="Passport information" nzBordered *ngIf="mrzDetails?.pFieldMaps">
+    <ng-container *ngFor="let element of mrzDetails?.pFieldMaps">
+      <nz-descriptions-item [nzTitle]="element.FieldType">
+        <!-- here there is one that comes from visual part of the passport Field_Visual and another one from MRZ  Field_MRZ-->
+        {{element.Field_MRZ || element.Field_Visual}}
+      </nz-descriptions-item>
+    </ng-container>
+  </nz-descriptions>
+</div>

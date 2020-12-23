@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: "http://localhost:9659"
+  apiUrl: "http://localhost:9659",
+  regulaUrl: "http://ec2-13-233-224-210.ap-south-1.compute.amazonaws.com:5000"
 };
 
 /*
