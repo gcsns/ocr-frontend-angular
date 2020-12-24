@@ -109,10 +109,10 @@ export class BaseocrComponent implements AfterViewInit, OnInit{
     var pattern = /image-*/;
     var reader = new FileReader();
     this.fileType = file.type;
-    if (!file.type.match(pattern)) {
-      alert('invalid format');
-      return;
-    }
+    // if (!file.type.match(pattern)) {
+    //   alert('invalid format');
+    //   return;
+    // }
     reader.onload = this._handleReaderLoaded.bind(this);
     reader.readAsDataURL(file);
   }
